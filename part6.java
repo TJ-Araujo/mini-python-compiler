@@ -7,7 +7,7 @@ class InnerTyping implements Visitor {
     public InnerTyping(TFile tfile) {
         this.tfile = tfile;
         // Initialize with global scope
-        scopeStack.push(new HashMap<>());
+        enterScope();
     }
 
     // Method to enter a new scope
@@ -36,30 +36,12 @@ class InnerTyping implements Visitor {
         return null; // Variable not found
     }
 
-    // Other methods...
-
-    @Override
-    public void visit(Sblock s) {
-        enterScope();
-        // Visit statements in the block
-        for (Stmt stmt : s.l) {
-            stmt.accept(this);
-        }
-        exitScope();
+    // Method to check if a variable is global
+    private boolean isGlobalVariable(String name) {
+        // Global variables are defined in the outermost scope
+        return scopeStack.size() == 1 && scopeStack.peek().containsKey(name);
     }
 
-    @Override
-    public void visit(Sassign s) {
-        // Check if variable is already defined in current scope
-        String varName = s.x.id;
-        if (getVariable(varName) != null) {
-            Typing.error(s.x.loc, "Variable " + varName + " is already defined in this scope");
-        }
-        // Visit the assigned expression
-        s.e.accept(this);
-        // Add the variable to the current scope
-        addVariable(varName, new Variable(/* type */));
-    }
-
-    // Other visit methods...
+    // Override visit methods to handle scoping rules appropriately
+    // ...
 }
